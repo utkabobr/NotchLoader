@@ -1,0 +1,3 @@
+include ':notchloader'
+include ':app'
+rootProject.name = "NotchLoader"
