@@ -45,6 +45,7 @@ public class NotchLoaderView extends FrameLayout {
     private int mOutlineColor;
     private int strokeWidth;
     private boolean inverseAnim;
+    private Spring mAppearSpring;
 
     // Shared fields
     private NotchUtils.LoaderMeta loaderMeta;
@@ -163,7 +164,11 @@ public class NotchLoaderView extends FrameLayout {
         setVisibility(VISIBLE);
 
         appearPending = true;
-        springSystem.createSpring()
+        if (mAppearSpring != null) {
+            mAppearSpring.destroy();
+            mAppearSpring = null;
+        }
+        mAppearSpring = springSystem.createSpring()
                 .setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(95, 13))
                 .setOvershootClampingEnabled(true)
                 .setCurrentValue(0)
@@ -172,7 +177,6 @@ public class NotchLoaderView extends FrameLayout {
                     public void onSpringUpdate(Spring spring) {
                         float val = (float) spring.getCurrentValue();
                         if (val >= 1) {
-                            spring.destroy();
                             setAlpha(1);
                             setTranslationY(0);
                             appearPending = false;
@@ -182,6 +186,7 @@ public class NotchLoaderView extends FrameLayout {
                                     mSpring = null;
                                     createNotchSpring();
                                 }
+                                inverseAnim = true;
                                 mSpring.setCurrentValue(0);
                                 mSpring.setEndValue(1);
                             }
@@ -192,6 +197,12 @@ public class NotchLoaderView extends FrameLayout {
                                 setTranslationY(-getMeasuredHeight() * (1f - val));
                             }
                         }
+                    }
+
+                    @Override
+                    public void onSpringAtRest(Spring spring) {
+                        spring.destroy();
+                        mAppearSpring = null;
                     }
                 })
                 .setEndValue(1);
@@ -305,6 +316,10 @@ public class NotchLoaderView extends FrameLayout {
      * Creates spring for the notch animation
      */
     private void createNotchSpring() {
+        if (mSpring != null) {
+            mSpring.destroy();
+            mSpring = null;
+        }
         mSpring = springSystem.createSpring()
                 .setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(10, 10))
                 .setOvershootClampingEnabled(true)
