@@ -92,9 +92,9 @@ public class NotchUtils {
             } else {
                 meta.loaderType = LoaderType.DEFAULT;
                 if (gravity == Gravity.START) {
-                    meta.marginStart = (int) (b.left + b.width());
+                    meta.marginStart = meta.marginEnd = (int) (b.left + b.width());
                 } else {
-                    meta.marginEnd = (int) (m.widthPixels - b.left);
+                    meta.marginEnd = meta.marginStart = (int) (m.widthPixels - b.left);
                 }
                 return meta;
             }
